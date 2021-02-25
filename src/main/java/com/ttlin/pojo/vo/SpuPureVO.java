@@ -13,7 +13,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SpuSimplifyVO {
+public class SpuPureVO {
     private Long id;
     private String title;
     private String subtitle;
