@@ -39,6 +39,14 @@ public class SpuController {
         return spu;
     }
 
-
-
+    //通过分类Id获取商品
+    @GetMapping("/by/category/{id}")
+    public PagingDozer<Spu, SpuPureVO> getByCategoryId(@PathVariable @Positive Long id,
+                                                       @RequestParam(name = "is_root", defaultValue = "false") Boolean isRoot,
+                                                       @RequestParam(defaultValue = "0") Integer start,
+                                                       @RequestParam(defaultValue = "10") Integer count) {
+        PageCounter pageCounter = CommonUtil.convertToPageParameter(start, count);
+        Page<Spu> page = this.spuService.getByCategoryId(id, isRoot, pageCounter.getPage(), pageCounter.getCount());
+        return new PagingDozer<>(page, SpuPureVO.class);
+    }
 }

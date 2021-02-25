@@ -24,5 +24,15 @@ public class SpuService {
         return this.spuRepository.findOneById(id);
     }
 
+    public Page<Spu> getByCategoryId(Long cid, Boolean isRoot, Integer pageNum, Integer size) {
+        Pageable page = PageRequest.of(pageNum, size);
+        if (isRoot) {
+            return this.spuRepository.findByRootCategoryIdOrderByCreateTime(cid, page);
+        }
+        else {
+            return this.spuRepository.findByCategoryIdOrderByCreateTimeDesc(cid, page);
+        }
+    }
+
 
 }

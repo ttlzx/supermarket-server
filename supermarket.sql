@@ -37,8 +37,8 @@ CREATE TABLE `spu` (
        `delete_time` datetime(3) DEFAULT NULL,
        `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
        `subtitle` varchar(800) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-       `category_id` int(10) unsigned NOT NULL,
-       `root_category_id` int(11) DEFAULT NULL,
+       `category_id` int(10) unsigned NOT NULL COMMENT '二级分类id',
+       `root_category_id` int(11) DEFAULT NULL COMMENT '一级分类id',
        `online` tinyint(3) unsigned NOT NULL DEFAULT '1',
        `price` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '文本型价格，有时候SPU需要展示的是一个范围，或者自定义平均价格',
        `sketch_spec_id` int(10) unsigned DEFAULT NULL COMMENT '某种规格可以直接附加单品图片',
@@ -182,4 +182,33 @@ CREATE TABLE `theme_spu` (
      `spu_id` int(10) unsigned NOT NULL,
      PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='theme和spu的第三张表, 无实际意义';
+
+CREATE TABLE `category` (
+    `id` int unsigned NOT NULL AUTO_INCREMENT,
+    `create_time` datetime(3) DEFAULT CURRENT_TIMESTAMP(3),
+    `update_time` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+    `delete_time` datetime(3) DEFAULT NULL,
+    `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+    `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+    `is_root` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '是否是根分类',
+    `parent_id` int unsigned DEFAULT NULL COMMENT '上一级分类的id',
+    `img` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+    `index` int unsigned DEFAULT NULL,
+    `online` int unsigned DEFAULT '1',
+    `level` int unsigned DEFAULT NULL COMMENT '第几级分类',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='分类表';
+
+CREATE TABLE `grid_category` (
+     `id` int unsigned NOT NULL AUTO_INCREMENT,
+     `create_time` datetime(3) DEFAULT CURRENT_TIMESTAMP(3),
+     `update_time` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+     `delete_time` datetime(3) DEFAULT NULL,
+     `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+     `img` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+     `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+     `category_id` int DEFAULT NULL COMMENT "二级分类id",
+     `root_category_id` int DEFAULT NULL COMMENT "对应根分类id",
+     PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT="网格分类表";
 
