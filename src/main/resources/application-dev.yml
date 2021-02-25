@@ -9,5 +9,10 @@ spring:
   jpa:
     properties:
       hibernate:
-        show_sql: false
-        format_sql: false
+        show_sql: true
+        format_sql: true
+
+supermarket:
+  security:
+    jwt-key: 7777777yue
+    token-expired-in: 86400000

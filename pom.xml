@@ -76,6 +76,13 @@
             <version>6.5.0</version>
         </dependency>
 
+        <!--jwt, auth0令牌生成与校验-->
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>java-jwt</artifactId>
+            <version>3.8.1</version>
+        </dependency>
+
     </dependencies>
 
 </project>
