@@ -69,6 +69,13 @@
             <artifactId>lombok</artifactId>
         </dependency>
 
+        <!--深拷贝属性-->
+        <dependency>
+            <groupId>com.github.dozermapper</groupId>
+            <artifactId>dozer-core</artifactId>
+            <version>6.5.0</version>
+        </dependency>
+
     </dependencies>
 
 </project>

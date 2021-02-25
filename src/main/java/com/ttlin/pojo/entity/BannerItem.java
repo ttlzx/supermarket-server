@@ -10,15 +10,12 @@ import java.util.Date;
 @Entity
 @Getter
 @Setter
-public class BannerItem {
+public class BannerItem extends BaseEntity{
     @Id
     private Long id;
     private String img;
     private String keyword;
     private short type;
-    private Date createTime;
-    private Date updateTime;
-    private Date deleteTime;
     private Long bannerId;
     private String name;
 }
