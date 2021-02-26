@@ -207,27 +207,92 @@ CREATE TABLE `grid_category` (
      `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
      `img` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
      `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-     `category_id` int DEFAULT NULL COMMENT "二级分类id",
-     `root_category_id` int DEFAULT NULL COMMENT "对应根分类id",
+     `category_id` int DEFAULT NULL COMMENT '二级分类id',
+     `root_category_id` int DEFAULT NULL COMMENT '对应根分类id',
      PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT="网格分类表";
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='网格分类表';
 
 CREATE TABLE `user` (
         `id` int unsigned NOT NULL AUTO_INCREMENT,
         `create_time` datetime(3) DEFAULT CURRENT_TIMESTAMP(3),
         `update_time` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
         `delete_time` datetime(3) DEFAULT NULL,
-        `openid` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT "微信返回的用户标识",
+        `openid` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '微信返回的用户标识',
         `nickname` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-        `unify_uid` int DEFAULT NULL COMMENT "微信返回的用户标识",
+        `unify_uid` int DEFAULT NULL COMMENT '微信返回的用户标识',
         `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
         `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
         `mobile` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-        `wx_profile` json DEFAULT NULL COMMENT "微信返回的数据",
-        `group` int unsigned DEFAULT '8' COMMENT "用户分组, 用于做会员系统的权限管理 8-普通用户, 16-会员, 32-超级会员",
+        `wx_profile` json DEFAULT NULL COMMENT '微信返回的数据',
+        `group` int unsigned DEFAULT '8' COMMENT '用户分组, 用于做会员系统的权限管理 8-普通用户, 16-会员, 32-超级会员',
         PRIMARY KEY (`id`),
         UNIQUE KEY `uni_openid` (`openid`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='C端用户表';
 
+DROP TABLE IF EXISTS `coupon`;
+CREATE TABLE `coupon` (
+      `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+      `create_time` datetime(3) DEFAULT CURRENT_TIMESTAMP(3),
+      `update_time` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+      `delete_time` datetime(3) DEFAULT NULL,
+      `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+      `start_time` datetime DEFAULT NULL COMMENT '优惠券生效时间',
+      `end_time` datetime DEFAULT NULL COMMENT '优惠券失效时间',
+      `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+      `full_money` decimal(10,2) DEFAULT NULL COMMENT '满减券或满金额折扣券,满多少钱减, 满多少钱打折',
+      `minus` decimal(10,2) DEFAULT NULL COMMENT '满减券, 减多少钱',
+      `rate` decimal(10,2) DEFAULT NULL COMMENT '折扣券 打多少拆',
+      `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '类似于描述, 如适用于女装',
+      `whole_store` tinyint(3) unsigned DEFAULT '0' COMMENT '标明是否是全场券',
+      `type` smallint(6) NOT NULL COMMENT '1. 满减券(满1000减200) 2.折扣券(直接打多少折) 3.无门槛券(无金额限制) 4.满金额折扣券(满1000才能打折 )',
+      `activity_id` int(10) unsigned DEFAULT NULL,
+      PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='优惠券表';
 
+DROP TABLE IF EXISTS `activity`;
+CREATE TABLE `activity` (
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+    `create_time` datetime(3) DEFAULT CURRENT_TIMESTAMP(3),
+    `update_time` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+    `delete_time` datetime(3) DEFAULT NULL,
+    `title` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+    `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+    `start_time` datetime(3) NOT NULL,
+    `end_time` datetime(3) NOT NULL,
+    `remark` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+    `online` tinyint(3) unsigned DEFAULT '1',
+    `entrance_img` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+    `internal_top_img` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+    `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='优惠活动表, 用于投放和领取优惠券';
+
+DROP TABLE IF EXISTS `activity_coupon`;
+CREATE TABLE `activity_coupon` (
+   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+   `coupon_id` int(10) unsigned NOT NULL,
+   `activity_id` int(11) unsigned NOT NULL,
+   PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='活动和优惠券的第三张表';
+
+DROP TABLE IF EXISTS `user_coupon`;
+CREATE TABLE `user_coupon` (
+   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+   `update_time` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+   `create_time` datetime(3) DEFAULT CURRENT_TIMESTAMP(3) COMMENT '用户领取优惠券时间',
+   `user_id` int(10) unsigned NOT NULL,
+   `coupon_id` int(10) unsigned NOT NULL,
+   `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '1:未使用，2：已使用， 3：已过期',
+   `order_id` int(10) unsigned DEFAULT NULL COMMENT '哪个订单使用了优惠券',
+   PRIMARY KEY (`id`),
+   UNIQUE KEY `uni_user_coupon` (`user_id`,`coupon_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='用户的优惠券表, 有实际业务意义的第三张表';
+
+DROP TABLE IF EXISTS `coupon_category`;
+CREATE TABLE `coupon_category` (
+   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+   `category_id` int(10) unsigned NOT NULL,
+   `coupon_id` int(11) unsigned NOT NULL,
+   PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='优惠券和分类的第三张表, 无实际业务意义';
 
