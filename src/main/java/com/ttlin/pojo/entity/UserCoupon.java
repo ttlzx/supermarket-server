@@ -1,7 +1,6 @@
 package com.ttlin.pojo.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -13,13 +12,16 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserCoupon {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
     private Long userId;
     private Long couponId;
-    private Short status;
+    private Integer status;
     private Date createTime;
     private Long orderId;
     private Date updateTime;

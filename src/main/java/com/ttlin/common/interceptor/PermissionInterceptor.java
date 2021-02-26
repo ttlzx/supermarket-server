@@ -9,9 +9,11 @@
 package com.ttlin.common.interceptor;
 
 import com.auth0.jwt.interfaces.Claim;
+import com.ttlin.common.base.LocalUser;
 import com.ttlin.common.exception.http.ForbiddenException;
 import com.ttlin.common.exception.http.UnAuthenticatedException;
 import com.ttlin.common.utils.JwtToken;
+import com.ttlin.pojo.entity.User;
 import com.ttlin.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -54,6 +56,13 @@ public class PermissionInterceptor extends HandlerInterceptorAdapter {
         return true;
     }
 
+    private void setToThreadLocal(Map<String, Claim> map) {
+        Long uid = map.get("uid").asLong();
+        Integer scope = map.get("scope").asInt();
+        User user = userService.getUserById(uid);
+        LocalUser.set(user, scope);
+    }
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         //1.获取请求中接口方法上的@Scope注解
@@ -83,11 +92,15 @@ public class PermissionInterceptor extends HandlerInterceptorAdapter {
 
         //4.验证权限scope
         boolean valid = this.hasPermission(scopeLevel.get(), map);
+        if (valid) {
+            this.setToThreadLocal(map);
+        }
         return valid;
     }
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        LocalUser.clear();
         super.postHandle(request, response, handler, modelAndView);
     }
 

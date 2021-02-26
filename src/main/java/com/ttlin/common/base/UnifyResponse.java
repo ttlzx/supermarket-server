@@ -34,4 +34,8 @@ public class UnifyResponse {
     public void setRequest(String request) {
         this.request = request;
     }
+
+    public static void createSuccess(int code) {
+        throw new CreateSuccess(code);
+    }
 }
