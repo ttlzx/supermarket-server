@@ -3,6 +3,7 @@ package com.ttlin.api;
 import com.github.dozermapper.core.DozerBeanMapperBuilder;
 import com.github.dozermapper.core.Mapper;
 import com.ttlin.common.exception.http.NotFoundException;
+import com.ttlin.common.interceptor.ScopeLevel;
 import com.ttlin.pojo.entity.Theme;
 import com.ttlin.pojo.vo.ThemePureVO;
 import com.ttlin.service.ThemeService;
@@ -37,7 +38,7 @@ public class ThemeController {
     }
 
     @GetMapping("/name/{name}" )
-    public Theme getThem(@PathVariable String name) {
+    public Theme getTheme(@PathVariable String name) {
         Theme theme = themeService.getThemeByName(name);
         if (theme == null) {
             throw new NotFoundException(30003);

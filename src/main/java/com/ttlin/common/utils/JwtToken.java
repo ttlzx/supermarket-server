@@ -24,7 +24,7 @@ public class JwtToken {
 
     private static String jwtKey;
     private static Integer expiredTimeIn;
-    private static Integer defaultScope = 8;
+    private static Integer defaultScope = 4;
 
     @Value("${supermarket.security.jwt-key}")
     public void setJwtKey(String jwtKey) {
@@ -64,5 +64,28 @@ public class JwtToken {
         map.put("now", now);
         map.put("expiredTime", calendar.getTime());
         return map;
+    }
+
+    public static Optional<Map<String, Claim>> getClaims(String token) {
+        DecodedJWT decodedJWT;
+        Algorithm algorithm = Algorithm.HMAC256(JwtToken.jwtKey);
+        JWTVerifier jwtVerifier = JWT.require(algorithm).build();
+        try {
+            decodedJWT = jwtVerifier.verify(token);
+        } catch (JWTVerificationException e) {
+            return Optional.empty();
+        }
+        return Optional.of(decodedJWT.getClaims());
+    }
+
+    public static Boolean verifyToken(String token) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(JwtToken.jwtKey);
+            JWTVerifier verifier = JWT.require(algorithm).build();
+            verifier.verify(token);
+        } catch (JWTVerificationException e) {
+            return false;
+        }
+        return true;
     }
 }

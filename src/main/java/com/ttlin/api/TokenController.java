@@ -1,6 +1,8 @@
 package com.ttlin.api;
 
 import com.ttlin.common.exception.http.NotFoundException;
+import com.ttlin.common.utils.JwtToken;
+import com.ttlin.pojo.dto.TokenDTO;
 import com.ttlin.pojo.dto.TokenGetDTO;
 import com.ttlin.service.WxAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,14 @@ public class TokenController {
         //字符串也要封装成类返回前端
         Map<String, String> map = new HashMap<>();
         map.put("token", token);
+        return map;
+    }
+
+    @PostMapping("/verify")
+    public Map<String, Boolean> verify(@RequestBody TokenDTO token) {
+        Map<String, Boolean> map = new HashMap<>();
+        Boolean valid = JwtToken.verifyToken(token.getToken());
+        map.put("is_valid", valid);
         return map;
     }
 }
