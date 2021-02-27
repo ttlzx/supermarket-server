@@ -1,9 +1,11 @@
 package com.ttlin.service;
 
+import com.ttlin.common.base.LocalUser;
 import com.ttlin.common.base.OrderStatus;
 import com.ttlin.common.exception.http.ForbiddenException;
 import com.ttlin.common.exception.http.NotFoundException;
 import com.ttlin.common.exception.http.ParameterException;
+import com.ttlin.common.utils.CommonUtil;
 import com.ttlin.common.utils.OrderUtil;
 import com.ttlin.common.utils.money.IMoneyDiscount;
 import com.ttlin.logic.CouponChecker;
@@ -20,11 +22,18 @@ import com.ttlin.repository.SkuRepository;
 import com.ttlin.repository.UserCouponRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,6 +58,9 @@ public class OrderService {
 
     @Value("${supermarket.order.max-sku-limit}")
     private int maxSkuLimit;
+
+    @Value("${supermarket.order.pay-time-limit}")
+    private Integer payTimeLimit;
 
     public OrderChecker isOk(Long uid, OrderDTO orderDTO) {
         if (orderDTO.getFinalTotalPrice().compareTo(new BigDecimal("0")) <= 0) {
@@ -84,6 +96,9 @@ public class OrderService {
     @Transactional
     public Long placeOrder(Long uid, OrderDTO orderDTO, OrderChecker orderChecker) {
         String orderNo = OrderUtil.makeOrderNo();
+        Calendar now = Calendar.getInstance();
+        Calendar nowFix = (Calendar) now.clone();
+        Date expiredTime = CommonUtil.addSomeSeconds(now, this.payTimeLimit).getTime();
 
         Order order = Order.builder()
                 .orderNo(orderNo)
@@ -94,6 +109,8 @@ public class OrderService {
                 .snapImg(orderChecker.getLeaderImg())
                 .snapTitle(orderChecker.getLeaderTitle())
                 .status(OrderStatus.UNPAID.value())
+                .expiredTime(expiredTime)
+                .placedTime(nowFix.getTime())
                 .build();
 
         order.setSnapAddress(orderDTO.getAddress());
@@ -129,6 +146,27 @@ public class OrderService {
         if (result != 1) {
             throw new ForbiddenException(40012);
         }
+    }
+
+    public Page<Order> getUnpaid(Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createTime").descending());
+        Long uid = LocalUser.getUser().getId();
+        Date now = new Date();
+        return this.orderRepository.findByExpiredTimeGreaterThanAndStatusAndUserId(now, OrderStatus.UNPAID.value(), uid, pageable);
+    }
+
+    public Page<Order> getByStatus(Integer status, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createTime").descending());
+        Long uid = LocalUser.getUser().getId();
+        if (status == OrderStatus.All.value()) {
+            return this.orderRepository.findByUserId(uid, pageable);
+        }
+        return this.orderRepository.findByUserIdAndStatus(uid, status, pageable);
+    }
+
+    public Optional<Order> getOrderDetail(Long oid) {
+        Long uid = LocalUser.getUser().getId();
+        return this.orderRepository.findFirstByUserIdAndId(uid, oid);
     }
 
 }

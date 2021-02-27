@@ -312,6 +312,8 @@ CREATE TABLE `order` (
      `prepay_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '用于微信支付, 预支付订单Id',
      `final_total_price` decimal(10,2) DEFAULT NULL COMMENT '最后除去优惠的总价',
      `status` tinyint unsigned DEFAULT '1' COMMENT '订单状态: 0-全部,1-待支付,2-已支付,3-待发货,4-已发货,5-已取消',
+     `expired_time` datetime(3) DEFAULT NULL COMMENT '预支付到期时间',
+     `placed_time` datetime(3) DEFAULT NULL COMMENT '提交订单时间'
      PRIMARY KEY (`id`) USING BTREE,
      UNIQUE KEY `uni_order_no` (`order_no`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=272 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMNET='订单表';

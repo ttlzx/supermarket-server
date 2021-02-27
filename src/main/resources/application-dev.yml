@@ -18,3 +18,4 @@ supermarket:
     token-expired-in: 86400000
   order:
     max-sku-limit: 777
+    pay-time-limit: 3600

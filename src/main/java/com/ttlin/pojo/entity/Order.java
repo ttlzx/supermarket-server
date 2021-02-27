@@ -36,6 +36,8 @@ public class Order extends BaseEntity{
     private String prepayId;
     private BigDecimal finalTotalPrice;
     private Integer status;
+    private Date expiredTime;
+    private Date placedTime;
 
 
     public void setSnapItems(List<OrderSku> orderSkuList) {

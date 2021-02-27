@@ -26,4 +26,9 @@ public class CommonUtil {
         }
         return false;
     }
+
+    public static Calendar addSomeSeconds(Calendar calendar, int seconds) {
+        calendar.add(Calendar.SECOND, seconds);
+        return calendar;
+    }
 }
