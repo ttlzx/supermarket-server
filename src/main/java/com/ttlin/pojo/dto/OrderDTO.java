@@ -23,4 +23,6 @@ public class OrderDTO {
     private Long couponId;
 
     private List<SkuInfoDTO> skuInfoList;
+
+    private OrderAddressDTO address;
 }
