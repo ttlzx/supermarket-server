@@ -16,3 +16,5 @@ supermarket:
   security:
     jwt-key: 7777777yue
     token-expired-in: 86400000
+  order:
+    max-sku-limit: 777
