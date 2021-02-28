@@ -26,6 +26,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +35,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -61,6 +63,9 @@ public class OrderService {
 
     @Value("${supermarket.order.pay-time-limit}")
     private Integer payTimeLimit;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     public OrderChecker isOk(Long uid, OrderDTO orderDTO) {
         if (orderDTO.getFinalTotalPrice().compareTo(new BigDecimal("0")) <= 0) {
@@ -128,6 +133,9 @@ public class OrderService {
             this.writeOffCoupon(orderDTO.getCouponId(), order.getId(), uid);
             couponId = orderDTO.getCouponId();
         }
+
+        this.sendToRedis(order.getId(), uid, couponId);
+
         return order.getId();
     }
 
@@ -167,6 +175,16 @@ public class OrderService {
     public Optional<Order> getOrderDetail(Long oid) {
         Long uid = LocalUser.getUser().getId();
         return this.orderRepository.findFirstByUserIdAndId(uid, oid);
+    }
+
+    private void sendToRedis(Long oid, Long uid, Long couponId) {
+        String key = uid.toString() + "," + oid.toString() + "," + couponId.toString();
+
+        try {
+            stringRedisTemplate.opsForValue().set(key, "1", this.payTimeLimit, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

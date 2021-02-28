@@ -11,6 +11,13 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+  redis:
+    host: 192.168.0.10
+    port: 6379
+    database: 7
+    password:
+    listen-pattern: __keyevent@7__:expired
+
 
 supermarket:
   security:
@@ -18,4 +25,4 @@ supermarket:
     token-expired-in: 86400000
   order:
     max-sku-limit: 777
-    pay-time-limit: 3600
+    pay-time-limit: 20

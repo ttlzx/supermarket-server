@@ -1,6 +1,8 @@
 package com.ttlin.pojo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.ttlin.common.base.OrderStatus;
 import com.ttlin.common.utils.GenericAndJson;
 import com.ttlin.pojo.dto.OrderAddressDTO;
 import lombok.*;
@@ -68,4 +70,10 @@ public class Order extends BaseEntity{
     public void setSnapAddress(OrderAddressDTO address) {
         this.snapAddress = GenericAndJson.objectToJson(address);
     }
+
+    @JsonIgnore
+    public OrderStatus getStatusEnum() {
+        return OrderStatus.toType(this.status);
+    }
+
 }
