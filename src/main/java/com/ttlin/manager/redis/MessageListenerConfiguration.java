@@ -8,10 +8,10 @@
  */
 package com.ttlin.manager.redis;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
@@ -23,8 +23,10 @@ public class MessageListenerConfiguration {
     @Value("${spring.redis.listen-pattern}")
     public String pattern;
 
-    @Autowired
-    private TopicMessageListener topicMessageListener;
+    @Bean
+    public MessageListener getTopicMessageLister() {
+        return new TopicMessageListener();
+    }
 
     @Bean
     public RedisMessageListenerContainer listenerContainer(RedisConnectionFactory redisConnection) {
@@ -32,7 +34,7 @@ public class MessageListenerConfiguration {
         container.setConnectionFactory(redisConnection);
         Topic topic = new PatternTopic(this.pattern);
 
-        container.addMessageListener(this.topicMessageListener, topic);
+        container.addMessageListener(this.getTopicMessageLister(), topic);
         return container;
     }
 }
